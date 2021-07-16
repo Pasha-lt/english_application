@@ -534,7 +534,3 @@ def json_creator(new_dict):
     '''Фунция преобразования dict в json'''
     with open("data_file.json", "w", encoding='utf-8') as write_file:
         json.dump(new_dict ,write_file, ensure_ascii=False, indent=4)
-
-# json_creator(new_dict)
-print(Fore.CYAN + 'красный' )
-print(Fore.GREEN + 'зеленый' )
