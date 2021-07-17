@@ -26,48 +26,39 @@ class Main:
         self.list_data.append('Все')
         return list(enumerate(self.list_data, 1))
 
-    def need_to_repeat(self, dict_key):
+    def need_to_repeat(self, key):
         """Метод который запрашивает у пользователя нужно ли ему повторить это слово если нужно
         то сохраняет его в блокнот для удобства."""
         print(Style.RESET_ALL)
         ans = input('Введите любой символ если хотите повторить слово.')
         if ans:
             with open('repeat.txt', 'a') as f:
-                f.write(f'{new_dict[dict_key][1]} - {dict_key}\n')
+                f.write(f'{new_dict[key][1]} - {key}\n')
 
     def foo(self):
-        """функция которая выводит слова с указаной датой и меняет ее на указаную. Есть пробелы
+        """метод который выводит слова с указаной датой и меняет ее на указаную. Есть пробелы
         для того чтобы увидеть слово
         data - определяет какое именно число нужно повторять слова"""
         data = int(
             input(f'Введите цифру которая присвоенна дате которую хотите повторить {self.all_data()}\n'))
         data = self.all_data()[data - 1][1]
         lang = input('Напишите rus или eng или both. Чтобы выбрать язык:\n')
-        if lang == 'eng':
-            for key in new_dict.keys():  # Санчала английские слова
-                if new_dict[key][0] == data:  # Запрашиваем конкретную дату.
-                    print(Fore.CYAN + key)
-                    self.need_to_repeat(key)
-                    print(Fore.CYAN + key, '--> ', end='')
-                    print(Fore.GREEN + new_dict[key][1])
-                    print(Style.RESET_ALL)
-                    print(f'\n{"*" * 80}')
-
-        elif lang == 'rus':
-            for key in new_dict.keys():  # Санчала английские слова
-                if new_dict[key][0] == data:  # Запрашиваем конкретную дату.
-                    print(Fore.GREEN + new_dict[key][1])
-                    self.need_to_repeat(key)
-                    print(Fore.GREEN + new_dict[key][1], '--> ', end='')
-                    print(Fore.CYAN + key)
-                    print(Style.RESET_ALL)
-                    print(f'\n{"*" * 80}')
-
-
-        elif lang == 'both':
-            for key in new_dict.keys():  # Санчала английские слова
-                if new_dict[key][0] == data:  # Запрашиваем конкретную дату.
+        for key in new_dict.keys():  # Санчала английские слова
+            if new_dict[key][0] == data:  # Запрашиваем конкретную дату.
+                if lang == 'eng':
+                    self.painter(key, new_dict[key][1], key)
+                elif lang == 'rus':
+                    self.painter(new_dict[key][1], key, key)
+                elif lang == 'both':
                     print(f'{key} - {new_dict[key][1]}\n{"*" * 80}')
+                    input()
+
+    def painter(self, first_value, second_value, key):
+        print(first_value, second_value)
+        print(Fore.RED + first_value)
+        self.need_to_repeat(key)
+        print(Fore.RED + first_value, '--> ', Fore.GREEN + second_value)
+        print(Style.RESET_ALL + f'\n{"*" * 80}')
 
     def change_data(self, key):
         response = input(
