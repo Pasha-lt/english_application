@@ -39,19 +39,27 @@ class Main:
         """метод который выводит слова с указаной датой и меняет ее на указаную. Есть пробелы
         для того чтобы увидеть слово
         data - определяет какое именно число нужно повторять слова"""
-        data = int(
-            input(f'Введите цифру которая присвоенна дате которую хотите повторить {self.all_data()}\n'))
+        data = int(input(f'Введите цифру которая присвоенна дате которую хотите повторить {self.all_data()}\n'))
         data = self.all_data()[data - 1][1]
         lang = input('Напишите rus или eng или both. Чтобы выбрать язык:\n')
-        for key in new_dict.keys():  # Санчала английские слова
-            if new_dict[key][0] == data:  # Запрашиваем конкретную дату.
-                if lang == 'eng':
-                    self.painter(key, new_dict[key][1], key)
-                elif lang == 'rus':
-                    self.painter(new_dict[key][1], key, key)
-                elif lang == 'both':
-                    print(f'{key} - {new_dict[key][1]}\n{"*" * 80}')
-                    input()
+        for key in new_dict.keys():
+            if data == 'Все':
+                self.lenguage_identifier(lang, key)
+            elif new_dict[key][0] == data:  # Запрашиваем конкретную дату.
+                self.lenguage_identifier(lang, key)
+
+
+    def lenguage_identifier(self, lang, key):
+        if lang == 'eng':
+            self.painter(key, new_dict[key][1], key)
+        elif lang == 'rus':
+            self.painter(new_dict[key][1], key, key)
+        elif lang == 'both':
+            print(f'{key} - {new_dict[key][1]}\n{"*" * 80}')
+            input()
+        else:
+            print('Вы не введи нужный язык нужно сделать выбор между "rus", "eng", "both"')
+            self.foo()
 
     def painter(self, first_value, second_value, key):
         print(first_value, second_value)
@@ -69,4 +77,4 @@ class Main:
 
 
 a = Main()
-print(a.foo())
+a.foo()
