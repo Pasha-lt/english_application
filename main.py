@@ -62,7 +62,6 @@ class Main:
             self.foo()
 
     def painter(self, first_value, second_value, key):
-        print(first_value, second_value)
         print(Fore.RED + first_value)
         self.need_to_repeat(key)
         print(Fore.RED + first_value, '--> ', Fore.GREEN + second_value)
