@@ -69,7 +69,7 @@ class Main:
             print(Style.RESET_ALL + f'\n{"*" * 80}')
             input()
         else:
-            print('Вы не ввели нужный язык, нужно сделать выбор между "rus", "eng", "both"')
+            print(Style.RESET_ALL + 'Вы не ввели нужный язык, нужно сделать выбор между "rus", "eng", "both"')
             self.foo()
 
     def painter(self, first_value, second_value, key):
