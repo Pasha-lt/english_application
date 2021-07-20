@@ -23,7 +23,8 @@ class Main:
         for key in new_dict.keys():
             if new_dict[key][0] not in self.list_data:
                 self.list_data.append(new_dict[key][0])
-        self.list_data.append('Все')
+        if 'Все' not in self.list_data:
+            self.list_data.append('Все')
         return list(enumerate(self.list_data, 1))
 
     def need_to_repeat(self, key):
@@ -39,40 +40,45 @@ class Main:
         """метод который выводит слова с указаной датой и меняет ее на указаную. Есть пробелы
         для того чтобы увидеть слово
         data - определяет какое именно число нужно повторять слова"""
-        data = int(input(f'Введите цифру которая присвоенна дате которую хотите повторить {self.all_data()}\n'))
-        data = self.all_data()[data - 1][1]
+        date = self.data()
         lang = input('Напишите rus или eng или both. Чтобы выбрать язык:\n')
         for key in new_dict.keys():
-            if data == 'Все':
+            if date == 'Все':
                 self.lenguage_identifier(lang, key)
-            elif new_dict[key][0] == data:  # Запрашиваем конкретную дату.
+            elif new_dict[key][0] == date:  # Запрашиваем конкретную дату.
                 self.lenguage_identifier(lang, key)
 
+    def data(self):
+        """Метод определяющий дату повтора"""
+        while True:
+            data_value = int(input(
+                f'Введите цифру которая присвоенна дате которую хотите повторить {self.all_data()}\n'))
+            if data_value > len(self.all_data()):
+                print('Вы ввели неправильный номер.')
+            else:
+                return self.all_data()[data_value - 1][1]
 
     def lenguage_identifier(self, lang, key):
+        """Метод определяющий язык"""
         if lang == 'eng':
             self.painter(key, new_dict[key][1], key)
         elif lang == 'rus':
             self.painter(new_dict[key][1], key, key)
         elif lang == 'both':
-            print(f'{key} - {new_dict[key][1]}\n{"*" * 80}')
+            print(Fore.RED + f'{key} - {Fore.GREEN + new_dict[key][1]}')
+            print(Style.RESET_ALL + f'\n{"*" * 80}')
             input()
         else:
-            print('Вы не введи нужный язык нужно сделать выбор между "rus", "eng", "both"')
+            print('Вы не введли нужный язык нужно сделать выбор между "rus", "eng", "both"')
             self.foo()
 
     def painter(self, first_value, second_value, key):
+        """Метод для покраски слов"""
         print(Fore.RED + first_value)
-        self.need_to_repeat(key)
+        input(Style.RESET_ALL + 'Enter чтобы увидеть перевод')
         print(Fore.RED + first_value, '--> ', Fore.GREEN + second_value)
+        self.need_to_repeat(key)
         print(Style.RESET_ALL + f'\n{"*" * 80}')
-
-    def change_data(self, key):
-        response = input(
-            'Нажмите ентер если знаете слово, если нет введите день пробел и месяц когда хотите его повторить:')  # добавляем активность между выводом
-        if response:
-            day, month = response.split()
-            new_dict[key][0] = f"{day}.{month}.2021"
 
 
 a = Main()
