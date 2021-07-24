@@ -2,19 +2,32 @@
 # и тогда эти балы будут влиять на то когда следующий раз будет показано слово.
 # спршивать в боте через сколько дней повторить
 # todo Переписать все на классы, а словарь вынести отдельно сделать json файлом или БД.
-# + did реализовать вариант перебора ВСЕ и сделать отдельные методы на повтор рус енг боз.
-# todo сделать чтобы из программы можно было менять дату. Но перед этим перегнать все в джейсон.
-# todo сделать отдельную проверку на lang
+# + реализовать вариант перебора ВСЕ и сделать отдельные методы на повтор рус енг боз.
+# todo сделать чтобы из программы можно было менять дату. Можно сделать сто дата просто умножается на два
+#  и когда доходит до определеного числа повторяется уже раз в месяц.
+#  Также можно сдела чтобы если мы нажали кнопку повтора то дата повтора этого слова скидывалась
+#  на 1 день и начинала цикл с началаНо перед этим перегнать все в джейсон.
+# + сделать отдельную проверку на lang
 # todo сделать возможность повторять слова по сегодняшней дате.
-# todo сделать озвучку русских и украинских слов
-# todo Версионость вывести в README документ
-# Version 1.01 Добавил возможность повторить все слова сегодня.
+# todo сделать озвучку русских и английских слов
+# + Версионость
+# todo сделать README документ
+# todo Сделать отдельный класс который будет преобразовать из словаря в джейсон иди в бд и так далее.
+
+# Version 1.01 Добавил возможность повторить все слова за сегодня.
+
+# Version 1.02
+# 1) Изменен вывод возможных повторов дат с горизонтального на вертикальный удалено.
+# 2) Сделаны исравления для лучшего понимая с "Сегодня" на "Слова на сегодня"  и с "Все" на "Все Слова"
+# 3) Найдена и исправлена ошибка когда вводили буквеный ввод при выборе повтора даты.
+# 4) Сделал отдельную проверку на язык повтора.
 
 
 import json
 from colorama import Fore, Back, Style
 from data import new_dict
 import datetime
+
 
 # def json_creator(new_dict):
 #     '''Фунция преобразования dict в json'''
@@ -23,15 +36,15 @@ import datetime
 
 class Main:
     def __init__(self):
-        self.list_data = ["Сегодня"]
+        self.list_data = ['Слова на сегодня']
 
     def all_data(self):
         """метод который собирает все даты слов и возвращает их пронумированым списком"""
         for key in new_dict.keys():
             if new_dict[key][0] not in self.list_data:
                 self.list_data.append(new_dict[key][0])
-        if 'Все' not in self.list_data:
-            self.list_data.append('Все')
+        if 'Все слова' not in self.list_data:
+            self.list_data.append('Все слова')
         return list(enumerate(self.list_data, 1))
 
     def need_to_repeat(self, key):
@@ -48,28 +61,38 @@ class Main:
         для того чтобы увидеть слово
         data - определяет какое именно число нужно повторять слова"""
         time_now = datetime.datetime.now().strftime('%d.%m.%Y')
-        date = self.data()
-        lang = input('Напишите rus или eng или both. Чтобы выбрать язык:\n')
+        date = self.check_data()
+        lang = self.check_lang()
         for key in new_dict.keys():
-            if date == 'Все':
+            if date == 'Все слова':
                 self.lenguage_identifier(lang, key)
-            elif date == 'Сегодня':
+            elif date == 'Слова на сегодня':
                 if time_now in new_dict[key][0]:
                     self.lenguage_identifier(lang, key)
             elif date == new_dict[key][0]:  # Запрашиваем конкретную дату.
                 self.lenguage_identifier(lang, key)
 
-
-
-    def data(self):
-        """Метод определяющий дату повтора"""
+    def check_lang(self):
+        """Метод проверки правильности ввода языка"""
         while True:
-            data_value = int(input(
-                f'Введите цифру которая присвоенна дате которую хотите повторить {self.all_data()}\n'))
-            if data_value > len(self.all_data()):
+            lang = input('Напишите rus или eng или both. Чтобы выбрать язык:\n')
+            if lang in ['rus', 'eng', 'both']:
+                return lang
+
+    def check_data(self):
+        """Метод определяющий дату повтора"""
+        all_dates_to_repeat = self.all_data()
+        while True:
+            print(f'Введите цифру которая присвоенна дате которую хотите повторить')
+            for date_tuple in all_dates_to_repeat:
+                print(date_tuple)
+            data_value = input()
+            if not data_value.isdigit():
+                print('Нужно ввести номер даты которую вы хотите повторить.')
+            elif int(data_value) > len(self.all_data()):
                 print('Вы ввели неправильный номер.')
             else:
-                return self.all_data()[data_value - 1][1]
+                return self.all_data()[int(data_value) - 1][1]
 
     def lenguage_identifier(self, lang, key):
         """Метод определяющий язык"""
@@ -82,7 +105,8 @@ class Main:
             print(Style.RESET_ALL + f'\n{"*" * 80}')
             input()
         else:
-            print(Style.RESET_ALL + 'Вы не ввели нужный язык, нужно сделать выбор между "rus", "eng", "both"')
+            print(
+                Style.RESET_ALL + 'Вы не ввели нужный язык, нужно сделать выбор между "rus", "eng", "both"')
             self.foo()
 
     def painter(self, first_value, second_value, key):
@@ -97,4 +121,3 @@ class Main:
 a = Main()
 while True:
     a.foo()
-
