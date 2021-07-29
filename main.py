@@ -15,7 +15,6 @@
 # todo Сделать отдельный класс который будет преобразовать из словаря в джейсон иди в бд и так далее.
 
 # Version 1.01 Добавил возможность повторить все слова за сегодня.
-
 # Version 1.02
 # 1) Изменен вывод возможных повторов дат с горизонтального на вертикальный удалено.
 # 2) Сделаны исравления для лучшего понимая с "Сегодня" на "Слова на сегодня"  и с "Все" на "Все Слова"
@@ -27,12 +26,6 @@ import json
 from colorama import Fore, Back, Style
 from data import new_dict
 import datetime
-
-
-# def json_creator(new_dict):
-#     '''Фунция преобразования dict в json'''
-#     with open("data_file.json", "w", encoding='utf-8') as write_file:
-#         json.dump(new_dict ,write_file, ensure_ascii=False, indent=4)
 
 class Main:
     def __init__(self):
@@ -117,6 +110,25 @@ class Main:
         self.need_to_repeat(key)
         print(Style.RESET_ALL + f'\n{"*" * 80}')
 
+
+
+class FormatConverter:
+    def __init__(self, array):
+        self.array = self.check_array(array)
+
+    def check_array(self, array):
+        """Функция определяет к какому типу данных принадлежит передаваемый массив."""
+        if isinstance(array, dict):
+            self.json_creator(array)
+    
+    
+    def json_creator(self, array):
+        '''Фунция преобразования dict в json'''
+        with open("data_file.json", "w", encoding='utf-8') as write_file:
+            json.dump(new_dict ,write_file, ensure_ascii=False, indent=4)
+
+
+# b = FormatConverter(new_dict)
 
 a = Main()
 while True:
