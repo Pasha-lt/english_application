@@ -5,10 +5,10 @@
 # + реализовать вариант перебора ВСЕ и сделать отдельные методы на повтор рус енг боз.
 # todo сделать чтобы из программы можно было менять дату. Можно сделать что дата просто умножается на два
 #  и когда доходит до определеного числа повторяется уже раз в месяц.
-#  Также можно сдела чтобы если мы нажали кнопку повтора то дата повтора этого слова скидывалась
-#  на 1 день и начинала цикл с началаНо перед этим перегнать все в джейсон.
+#  Также можно сделать чтобы если мы нажали кнопку повтора то дата повтора этого слова скидывалась
+#  на 1 день и начинала цикл с начально перед этим перегнать все в джейсон.
 # + сделать отдельную проверку на lang
-# todo сделать возможность повторять слова по сегодняшней дате.
+# + сделать возможность повторять слова по сегодняшней дате.
 # todo сделать озвучку русских и английских слов
 # + Версионость
 # todo сделать README документ
@@ -23,20 +23,26 @@
 # Version 1.03
 # Добавил метод words_counter() - который подсчитывает количество слов в словаре.
 
-import json
+from gtts import gTTS
 from colorama import Fore, Back, Style
-from data import new_dict
+
+import json
 import datetime
 
+from data import vocabulary_dict
+from on_study import study_dict
+
+
 class Main:
+    time_now = datetime.datetime.now().strftime('%d.%m.%Y')
     def __init__(self):
         self.list_data = ['Слова на сегодня']
 
     def all_data(self):
         """метод который собирает все даты слов и возвращает их пронумированым списком"""
-        for key in new_dict.keys():
-            if new_dict[key][0] not in self.list_data:
-                self.list_data.append(new_dict[key][0])
+        for key in vocabulary_dict.keys():
+            if vocabulary_dict[key][0] not in self.list_data:
+                self.list_data.append(vocabulary_dict[key][0])
         if 'Все слова' not in self.list_data:
             self.list_data.append('Все слова')
         return list(enumerate(self.list_data, 1))
@@ -45,25 +51,24 @@ class Main:
         """Метод который запрашивает у пользователя нужно ли ему повторить это слово если нужно
         то сохраняет его в блокнот для удобства."""
         print(Style.RESET_ALL)
-        ans = input('Введите любой символ если хотите повторить слово.')
-        if ans:
+        input_1 = input('Введите любой символ если хотите повторить слово.')
+        if input_1:
             with open('repeat.txt', 'a') as f:
-                f.write(f'{new_dict[key][1]} - {key}\n')
+                f.write(f'{vocabulary_dict[key][1]} - {key}\n')
 
-    def foo(self):
-        """метод который выводит слова с указаной датой и меняет ее на указаную. Есть пробелы
-        для того чтобы увидеть слово
+    def chooser_date(self):
+        """метод который выводит слова с указаной датой и запрашивает у пользователя за какой периуд
+        он хочет их повторить. Есть пробелы для того чтобы увидеть слово.
         data - определяет какое именно число нужно повторять слова"""
-        time_now = datetime.datetime.now().strftime('%d.%m.%Y')
         date = self.check_data()
         lang = self.check_lang()
-        for key in new_dict.keys():
+        for key in vocabulary_dict.keys():
             if date == 'Все слова':
                 self.lenguage_identifier(lang, key)
             elif date == 'Слова на сегодня':
-                if time_now in new_dict[key][0]:
+                if self.time_now in vocabulary_dict[key][0]:
                     self.lenguage_identifier(lang, key)
-            elif date == new_dict[key][0]:  # Запрашиваем конкретную дату.
+            elif date == vocabulary_dict[key][0]:  # Запрашиваем конкретную дату.
                 self.lenguage_identifier(lang, key)
 
     def check_lang(self):
@@ -91,17 +96,17 @@ class Main:
     def lenguage_identifier(self, lang, key):
         """Метод определяющий язык"""
         if lang == 'eng':
-            self.painter(key, new_dict[key][1], key)
+            self.painter(key, vocabulary_dict[key][1], key)
         elif lang == 'rus':
-            self.painter(new_dict[key][1], key, key)
+            self.painter(vocabulary_dict[key][1], key, key)
         elif lang == 'both':
-            print(Fore.RED + f'{key} - {Fore.GREEN + new_dict[key][1]}')
+            print(Fore.RED + f'{key} - {Fore.GREEN + vocabulary_dict[key][1]}')
             print(Style.RESET_ALL + f'\n{"*" * 80}')
             input()
         else:
             print(
                 Style.RESET_ALL + 'Вы не ввели нужный язык, нужно сделать выбор между "rus", "eng", "both"')
-            self.foo()
+            self.chooser_date()
 
     def painter(self, first_value, second_value, key):
         """Метод для покраски слов"""
@@ -111,11 +116,25 @@ class Main:
         self.need_to_repeat(key)
         print(Style.RESET_ALL + f'\n{"*" * 80}')
         
+    def speacker(self):
+        # all_dict = {**study_dict, **vocabulary_dict} # все слова
+        all_dict = {**study_dict} # слова на изучении
+        # all_dict = {**vocabulary_dict} # изученые слова
+        for eng_string, ru_string in all_dict.items():
+            print(f'{eng_string}-{ru_string[1]}') # показывает слова котрые записывает в аудио файл.
+            tts_en = gTTS(eng_string, lang='en')
+            tts_ru = gTTS(ru_string[1], lang='ru')
+
+            with open('test.mp3', 'ab') as f:
+                tts_en.write_to_fp(f)
+
+            with open('test.mp3', 'ab') as f:
+                tts_ru.write_to_fp(f)
+
+
     def words_counter(self):
         """Метод который показует количество слов в словаре"""
-        return len(new_dict)
-
-
+        return len(vocabulary_dict)
 
 class FormatConverter:
     def __init__(self, array):
@@ -129,12 +148,13 @@ class FormatConverter:
     def json_creator(self, array):
         '''Фунция преобразования dict в json'''
         with open("data_file.json", "w", encoding='utf-8') as write_file:
-            json.dump(new_dict ,write_file, ensure_ascii=False, indent=4)
+            json.dump(vocabulary_dict ,write_file, ensure_ascii=False, indent=4)
     
 
 b = FormatConverter(1)
 
 a = Main()
 # print(a.words_counter())
-while True:
-    a.foo()
+# while True:
+#     a.chooser_date()
+a.speacker()
